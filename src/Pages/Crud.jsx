@@ -1,4 +1,6 @@
 import React, { useRef, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   useAddBookMutation,
   useDeleteBookMutation,
@@ -8,7 +10,9 @@ import {
 
 const Crud = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingBook, setEditingBook] = useState(null); // Track the book being edited
+  const [editingBook, setEditingBook] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [editDate, setEditDate] = useState(new Date());
   const titleRef = useRef();
   const authorRef = useRef();
 
@@ -21,10 +25,12 @@ const Crud = () => {
     const newBook = {
       title: titleRef.current.value || null,
       author: authorRef.current.value || null,
+      publishDate: selectedDate.toISOString().split('T')[0],
     };
     addBook(newBook);
     titleRef.current.value = "";
     authorRef.current.value = "";
+    setSelectedDate(new Date());
   };
 
   const handleDelete = (id) => {
@@ -33,6 +39,7 @@ const Crud = () => {
 
   const handleEdit = (book) => {
     setEditingBook(book);
+    setEditDate(new Date(book.publishDate));
     setIsModalOpen(true);
   };
 
@@ -41,6 +48,7 @@ const Crud = () => {
       ...editingBook,
       title: titleRef.current.value || null,
       author: authorRef.current.value || null,
+      publishDate: editDate.toISOString().split('T')[0],
     };
     updateBook(updatedBook);
     setEditingBook(null);
@@ -58,14 +66,20 @@ const Crud = () => {
             <input
               type="text"
               placeholder="Title"
-              className="p-2 border border-gray-300 rounded w-full"
+              className="p-2 border border-gray-300 rounded"
               ref={titleRef}
             />
             <input
               type="text"
               placeholder="Author"
               ref={authorRef}
+              className="p-2 border border-gray-300 rounded "
+            />
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
               className="p-2 border border-gray-300 rounded w-full"
+              placeholderText="Publish Date"
             />
             <button
               className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800"
@@ -79,6 +93,7 @@ const Crud = () => {
               <tr className="bg-gray-200 text-left text-gray-600">
                 <th className="px-4 py-2">Title</th>
                 <th className="px-4 py-2">Author</th>
+                <th className="px-4 py-2">Publish Date</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -87,6 +102,7 @@ const Crud = () => {
                 <tr key={book.id} className="border-t">
                   <td className="px-4 py-2">{book.title}</td>
                   <td className="px-4 py-2">{book.author}</td>
+                  <td className="px-4 py-2">{book.publishDate}</td>
                   <td className="px-4 py-2">
                     <button
                       className="bg-gray-800 text-white px-3 py-1 rounded mr-2 hover:bg-gray-700"
@@ -125,6 +141,12 @@ const Crud = () => {
               className="p-2 border border-gray-300 rounded w-full mb-3"
               ref={authorRef}
               defaultValue={editingBook?.author}
+            />
+            <DatePicker
+              selected={editDate}
+              onChange={(date) => setEditDate(date)}
+              className="p-2 border border-gray-300 rounded w-full mb-3"
+              placeholderText="Publish Date"
             />
             <div className="flex justify-end space-x-2">
               <button

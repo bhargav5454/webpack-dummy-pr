@@ -4,7 +4,6 @@ import { axiosBaseQuery } from "../../Lib/Axios.js";
 export const bookApi = createApi({
   reducerPath: "bookApi",
   baseQuery: axiosBaseQuery(),
-
   tagTypes: ["Book"],
   endpoints: (builder) => ({
     addBook: builder.mutation({
