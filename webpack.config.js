@@ -32,11 +32,25 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/,  // Handle CSS files
-        use: [MiniCssExtractPlugin.loader, "css-loader"],  // Extract CSS and process it
+        test: /\.css$/,  
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require("tailwindcss"),
+                  require("autoprefixer"),
+                ],
+              },
+            },
+          },
+        ],
       },
       {
-        test: /\.svg$/,  // Handle SVG files
+        test: /\.svg$/,  
         use: ["@svgr/webpack"],
       },
     ],
@@ -58,8 +72,8 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "dist"),
     },
-    compress: true,  // Enable Gzip compression for faster serving
-    port: 3000,
-    open: true,  // Automatically open the browser
+    compress: true,  
+    port: 8080,
+    open: true,  
   },
 };
