@@ -23,26 +23,34 @@ const Crud = () => {
     { id: 1, title: "To Kill a Mockingbird", author: "Harper Lee" },
     { id: 2, title: "1984", author: "George Orwell" },
   ]);
-  const [newBook, setNewBook] = useState({ title: "", author: "" });
-  const [editingBook, setEditingBook] = useState(null);
+  const [currentBook, setCurrentBook] = useState({ id: null, title: "", author: "" });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const addBook = () => {
-    if (newBook.title && newBook.author) {
-      setBooks([...books, { ...newBook, id: Date.now() }]);
-      setNewBook({ title: "", author: "" });
+  const handleSaveBook = () => {
+    if (!currentBook.title || !currentBook.author) return;
+
+    if (currentBook.id) {
+      // Update book
+      setBooks(books.map(book => (book.id === currentBook.id ? currentBook : book)));
+    } else {
+      // Add new book
+      setBooks([...books, { ...currentBook, id: Date.now() }]);
     }
+
+    resetForm();
   };
 
-  const updateBook = () => {
-    if (editingBook) {
-      setBooks(
-        books.map((book) => (book.id === editingBook.id ? editingBook : book))
-      );
-      setEditingBook(null);
-    }
+  const handleEditBook = (book) => {
+    setCurrentBook(book);
+    setIsDialogOpen(true);
   };
 
-  const deleteBook = (id) => {
+  const resetForm = () => {
+    setCurrentBook({ id: null, title: "", author: "" });
+    setIsDialogOpen(false);
+  };
+
+  const handleDeleteBook = (id) => {
     setBooks(books.filter((book) => book.id !== id));
   };
 
@@ -55,15 +63,17 @@ const Crud = () => {
         <div className="flex space-x-2 mb-4">
           <Input
             placeholder="Title"
-            value={newBook.title}
-            onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
+            value={currentBook.title}
+            onChange={(e) => setCurrentBook({ ...currentBook, title: e.target.value })}
           />
           <Input
             placeholder="Author"
-            value={newBook.author}
-            onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
+            value={currentBook.author}
+            onChange={(e) => setCurrentBook({ ...currentBook, author: e.target.value })}
           />
-          <Button onClick={addBook}>Add Book</Button>
+          <Button onClick={handleSaveBook}>
+            {currentBook.id ? "Update Book" : "Add Book"}
+          </Button>
         </div>
         <Table>
           <TableHeader>
@@ -79,48 +89,16 @@ const Crud = () => {
                 <TableCell>{book.title}</TableCell>
                 <TableCell>{book.author}</TableCell>
                 <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="mr-2"
-                        onClick={() => setEditingBook(book)}
-                      >
-                        Edit
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Book</DialogTitle>
-                      </DialogHeader>
-                      <Input
-                        placeholder="Title"
-                        value={editingBook?.title || ""}
-                        onChange={(e) =>
-                          setEditingBook({
-                            ...editingBook,
-                            title: e.target.value,
-                          })
-                        }
-                        className="mb-2"
-                      />
-                      <Input
-                        placeholder="Author"
-                        value={editingBook?.author || ""}
-                        onChange={(e) =>
-                          setEditingBook({
-                            ...editingBook,
-                            author: e.target.value,
-                          })
-                        }
-                        className="mb-2"
-                      />
-                      <Button onClick={updateBook}>Update</Button>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    variant="outline"
+                    className="mr-2"
+                    onClick={() => handleEditBook(book)}
+                  >
+                    Edit
+                  </Button>
                   <Button
                     variant="destructive"
-                    onClick={() => deleteBook(book.id)}
+                    onClick={() => handleDeleteBook(book.id)}
                   >
                     Delete
                   </Button>
@@ -130,6 +108,29 @@ const Crud = () => {
           </TableBody>
         </Table>
       </CardContent>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <span />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{currentBook.id ? "Edit Book" : "Add New Book"}</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Title"
+            value={currentBook.title}
+            onChange={(e) => setCurrentBook({ ...currentBook, title: e.target.value })}
+            className="mb-2"
+          />
+          <Input
+            placeholder="Author"
+            value={currentBook.author}
+            onChange={(e) => setCurrentBook({ ...currentBook, author: e.target.value })}
+            className="mb-2"
+          />
+          <Button onClick={handleSaveBook}>{currentBook.id ? "Update" : "Save"}</Button>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
