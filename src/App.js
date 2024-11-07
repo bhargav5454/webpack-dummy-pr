@@ -1,10 +1,9 @@
-import React from 'react'
-import "./App.css"
+import React from "react";
+import "./App.css";
+import Crud from "./Pages/Crud.jsx";
 
 const App = () => {
-  return (
-    <div>App</div>
-  )
-}
+  return <Crud />;
+};
 
-export default App
+export default App;
