@@ -19,8 +19,8 @@ const Crud = () => {
 
   const handleSubmit = () => {
     const newBook = {
-      title: titleRef.current.value,
-      author: authorRef.current.value,
+      title: titleRef.current.value || null,
+      author: authorRef.current.value || null,
     };
     addBook(newBook);
     titleRef.current.value = "";
@@ -39,8 +39,8 @@ const Crud = () => {
   const handleUpdate = () => {
     const updatedBook = {
       ...editingBook,
-      title: titleRef.current.value,
-      author: authorRef.current.value,
+      title: titleRef.current.value || null,
+      author: authorRef.current.value || null,
     };
     updateBook(updatedBook);
     setEditingBook(null);
